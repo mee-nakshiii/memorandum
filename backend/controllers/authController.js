@@ -4,19 +4,34 @@ const User = require('../models/User');
 // @desc    Register a new user
 // @route   POST /api/auth/register
 // @access  Public
-const registerUser = async (req, res) => {
+const registerUser = async (req, res, next) => {
   try {
     const { name, email, password, role, department, batch } = req.body;
 
     // Validate required fields
     if (!name || !email || !password || !department || !batch) {
-      return res.status(400).json({ error: 'Please provide all required fields' });
+      res.status(400);
+      throw new Error('Please provide all required fields (name, email, password, department, batch)');
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      res.status(400);
+      throw new Error('Invalid email format');
+    }
+
+    // Validate role if provided
+    if (role && !['student', 'alumni', 'admin'].includes(role)) {
+      res.status(400);
+      throw new Error('Invalid user role');
     }
 
     // Check if email already exists
     const emailExists = await User.findOne({ email });
     if (emailExists) {
-      return res.status(400).json({ error: 'Email already exists' });
+      res.status(400);
+      throw new Error('Email already exists');
     }
 
     // Create a new user (pre-save hook hashes password)
@@ -24,44 +39,48 @@ const registerUser = async (req, res) => {
       name,
       email,
       password,
-      role,
+      role: role || 'student',
       department,
       batch
     });
 
     res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
-    res.status(500).json({ error: error.message || 'Server error during registration' });
+    next(error);
   }
 };
 
 // @desc    Authenticate user & get token
 // @route   POST /api/auth/login
 // @access  Public
-const loginUser = async (req, res) => {
+const loginUser = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
     // Validate email and password presence
     if (!email || !password) {
-      return res.status(400).json({ error: 'Please provide email and password' });
+      res.status(400);
+      throw new Error('Please provide email and password');
     }
 
     // Find user by email
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      res.status(401);
+      throw new Error('Invalid credentials');
     }
 
     // Compare password using User model method
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      res.status(401);
+      throw new Error('Invalid credentials');
     }
 
     // Check that JWT_SECRET is configured
     if (!process.env.JWT_SECRET) {
-      return res.status(500).json({ error: 'JWT Secret is not configured in environment' });
+      res.status(500);
+      throw new Error('JWT Secret is not configured in environment');
     }
 
     // Generate JWT containing user id and role
@@ -78,7 +97,7 @@ const loginUser = async (req, res) => {
       name: user.name
     });
   } catch (error) {
-    res.status(500).json({ error: error.message || 'Server error during login' });
+    next(error);
   }
 };
 

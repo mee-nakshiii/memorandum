@@ -28,6 +28,22 @@ app.use('/api/auth', authRoutes);
 const alumniRoutes = require('./routes/alumniRoutes');
 app.use('/api/alumni', alumniRoutes);
 
+// Job Routes
+const jobRoutes = require('./routes/jobRoutes');
+app.use('/api/jobs', jobRoutes);
+
+// Event Routes
+const eventRoutes = require('./routes/eventRoutes');
+app.use('/api/events', eventRoutes);
+
+// Admin Routes
+const adminRoutes = require('./routes/adminRoutes');
+app.use('/api/admin', adminRoutes);
+
+// Centralized Error Handler Middleware (must be registered last)
+const { errorHandler } = require('./middleware/errorMiddleware');
+app.use(errorHandler);
+
 // Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
