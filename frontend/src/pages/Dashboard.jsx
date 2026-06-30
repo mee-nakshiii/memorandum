@@ -70,8 +70,8 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5000/api/events',
+      await api.post(
+        '/events',
         eventForm,
         {
           headers: { Authorization: `Bearer ${token}` }
