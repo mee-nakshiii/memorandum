@@ -70,13 +70,9 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5000/api/events',
-        eventForm,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.post('/events', eventForm, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setMessage({ type: 'success', text: 'Event created successfully!' });
       setEventForm({ title: '', venue: '', date: '', description: '' });
     } catch (err) {
