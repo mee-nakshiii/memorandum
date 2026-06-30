@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import api from "../services/api";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +10,7 @@ const Register = () => {
     password: '',
     department: '',
     batch: '',
-    role: 'Student' // default value
+    role: 'student' // default value
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -32,7 +33,7 @@ const Register = () => {
     setIsLoading(true);
 
     try {
-      await axios.post('http://localhost:5000/api/auth/register', {
+      await api.post("/auth/register", {
         name,
         email,
         password,
@@ -48,8 +49,8 @@ const Register = () => {
     } catch (err) {
       console.error(err);
       setError(
-        err.response?.data?.message || 
-        err.response?.data?.error || 
+        err.response?.data?.message ||
+        err.response?.data?.error ||
         'Registration failed. Please check your inputs and try again.'
       );
     } finally {
@@ -149,15 +150,15 @@ const Register = () => {
                 onChange={onChange}
                 required
               >
-                <option value="Student">Student</option>
-                <option value="Alumni">Alumni</option>
-                <option value="Admin">Admin</option>
+                <option value="student">Student</option>
+                <option value="alumni">Alumni</option>
+                <option value="admin">Admin</option>
               </select>
             </div>
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary auth-btn"
             disabled={isLoading}
           >

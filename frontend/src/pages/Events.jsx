@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import EventCard from '../components/EventCard';
+import api from "../services/api";
 
 // Professional mock data for fallbacks
 const MOCK_EVENTS = [
@@ -36,7 +37,7 @@ const Events = () => {
     const fetchEvents = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/events');
+        const response = await api.get("/events");
         setEventsList(response.data || []);
       } catch (err) {
         console.warn('Backend API not responding, falling back to mock data:', err.message);

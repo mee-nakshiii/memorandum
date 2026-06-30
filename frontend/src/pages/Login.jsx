@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import axios from 'axios';
+import api from "../services/api";
 
 const Login = () => {
   const [formData, setFormData] = useState({
     email: '',
     password: ''
   });
+
+
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -28,7 +30,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await api.post("/auth/login", {
         email,
         password
       });
@@ -39,17 +41,21 @@ const Login = () => {
       const role = data.role || (data.data && data.data.role);
 
       if (token && role) {
-        localStorage.setItem('token', token);
-        localStorage.setItem('role', role);
-        setSuccess('Login successful! Redirecting...');
-        
+        localStorage.setItem("token", token);
+        localStorage.setItem("role", role);
+        localStorage.setItem("name", data.name || "");
+
+        setSuccess("Login successful! Redirecting...");
+
         setTimeout(() => {
-          navigate('/dashboard');
+          navigate("/dashboard");
         }, 1000);
+
       } else {
         // Fallback if structure is slightly different
-        localStorage.setItem('token', data.token || '');
-        localStorage.setItem('role', data.role || 'Student');
+        localStorage.setItem("token", data.token || "");
+        localStorage.setItem("role", data.role || "student");
+        localStorage.setItem("name", data.name || "");
         setSuccess('Login successful! Redirecting...');
         setTimeout(() => {
           navigate('/dashboard');
@@ -58,8 +64,8 @@ const Login = () => {
     } catch (err) {
       console.error(err);
       setError(
-        err.response?.data?.message || 
-        err.response?.data?.error || 
+        err.response?.data?.message ||
+        err.response?.data?.error ||
         'Invalid credentials. Please try again.'
       );
     } finally {
@@ -106,8 +112,8 @@ const Login = () => {
             />
           </div>
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             className="btn btn-primary auth-btn"
             disabled={isLoading}
           >

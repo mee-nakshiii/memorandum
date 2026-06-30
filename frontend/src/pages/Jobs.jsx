@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import JobCard from '../components/JobCard';
+import api from "../services/api";
 
 // Professional mock data for fallbacks
 const MOCK_JOBS = [
@@ -39,7 +40,7 @@ const Jobs = () => {
     const fetchJobs = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/jobs');
+        const response = await api.get("/jobs");
         setJobsList(response.data || []);
       } catch (err) {
         console.warn('Backend API not responding, falling back to mock data:', err.message);

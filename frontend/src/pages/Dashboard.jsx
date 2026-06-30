@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import api from "../services/api";
 
 const Dashboard = () => {
   const [role, setRole] = useState('');
@@ -12,7 +13,7 @@ const Dashboard = () => {
   });
   const [jobForm, setJobForm] = useState({ company: '', title: '', description: '' });
   const [eventForm, setEventForm] = useState({ title: '', venue: '', date: '', description: '' });
-  
+
   const [message, setMessage] = useState({ type: '', text: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
@@ -20,7 +21,7 @@ const Dashboard = () => {
   useEffect(() => {
     const savedRole = localStorage.getItem('role');
     const token = localStorage.getItem('token');
-    
+
     if (!token) {
       navigate('/login');
       return;
@@ -46,20 +47,16 @@ const Dashboard = () => {
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(
-        'http://localhost:5000/api/jobs',
-        jobForm,
-        {
-          headers: { Authorization: `Bearer ${token}` }
-        }
-      );
+      await api.post("/jobs", jobForm, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       setMessage({ type: 'success', text: 'Job posted successfully!' });
       setJobForm({ company: '', title: '', description: '' });
     } catch (err) {
       console.error(err);
-      setMessage({ 
-        type: 'error', 
-        text: err.response?.data?.message || 'Failed to post job. Please verify connection.' 
+      setMessage({
+        type: 'error',
+        text: err.response?.data?.message || 'Failed to post job. Please verify connection.'
       });
     } finally {
       setIsSubmitting(false);
@@ -84,9 +81,9 @@ const Dashboard = () => {
       setEventForm({ title: '', venue: '', date: '', description: '' });
     } catch (err) {
       console.error(err);
-      setMessage({ 
-        type: 'error', 
-        text: err.response?.data?.message || 'Failed to create event. Please verify connection.' 
+      setMessage({
+        type: 'error',
+        text: err.response?.data?.message || 'Failed to create event. Please verify connection.'
       });
     } finally {
       setIsSubmitting(false);

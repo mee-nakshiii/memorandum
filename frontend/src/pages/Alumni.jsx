@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import AlumniCard from '../components/AlumniCard';
 import SearchBar from '../components/SearchBar';
+import api from "../services/api";
 
 // Professional mock data for fallbacks
 const MOCK_ALUMNI = [
@@ -23,7 +24,7 @@ const Alumni = () => {
     const fetchAlumni = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('http://localhost:5000/api/alumni');
+        const response = await api.get("/alumni");
         setAlumniList(response.data || []);
       } catch (err) {
         console.warn('Backend API not responding, falling back to mock data:', err.message);
@@ -49,11 +50,11 @@ const Alumni = () => {
         <p style={{ textAlign: 'center', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
           Search and connect with graduates from various batches and departments.
         </p>
-        
-        <SearchBar 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery} 
-          placeholder="Search alumni by name..." 
+
+        <SearchBar
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          placeholder="Search alumni by name..."
         />
       </div>
 
